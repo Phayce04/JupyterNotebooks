@@ -87,11 +87,25 @@ def calculate_and_plot_quadratic(entry_1, canvas, result_label):
                 raise ValueError("Invalid vertex form. Use y = a(x-h)^2 + k")
         elif "x^2" in equation_input:
             # Standard form: y = ax^2 + bx + c
-            match = re.match(r"y=([+-]?\d*\.?\d*)x\^2([+-]\d*\.?\d*)x([+-]\d*\.?\d*)", equation_input)
+            match = re.match(r"y=([+-]?\d*\.?\d*)x\^2([+-]\d*\.?\d*x)?([+-]\d*\.?\d*)?", equation_input)
             if match:
+                # Extract coefficients
                 a = float(match.group(1)) if match.group(1) not in ["", "+", "-"] else 1 if match.group(1) in ["", "+"] else -1
-                b = float(match.group(2))
-                c = float(match.group(3))
+                
+                # Handle the bx term
+                if match.group(2):  # If bx term exists
+                    b_term = match.group(2).replace("x", "")  # Remove 'x' to get the coefficient
+                    b = float(b_term) if b_term not in ["+", "-"] else 1 if b_term == "+" else -1
+                else:
+                    b = 0  # Default to 0 if bx term is missing
+
+                # Handle the constant term
+                if match.group(3):  # If constant term exists
+                    c = float(match.group(3))
+                else:
+                    c = 0  # Default to 0 if constant term is missing
+
+                # Calculate vertex
                 h = -b / (2 * a)
                 k = a * h**2 + b * h + c
             else:
