@@ -49,7 +49,7 @@ def calculate_and_plot(entry_1, entry_2, entry_3, entry_4, canvas, result_label)
                 intercept = right_side / B if B != 0 else 0  
              # Point-Slope Form
             elif "y" in equation_input and "=" in equation_input and "(x" in equation_input: 
-                match = re.match(r"y\s*([\+\-]?\s*\d*\.?\d*)\s*=\s*([\+\-]?\d*\.?\d+(?:/\d*\.?\d+)?)\s*\(x\s*([\+\-]?\s*\d*\.?\d*)\)", equation_input)
+                match = re.match(r"y\s*([\+\-]?\s*\d+)\s*=\s*([\+\-]?\d+)\(x\s*([\+\-]?\s*\d+)\)", equation_input)
                 
                 if match:
                     y_part = match.group(1).strip()

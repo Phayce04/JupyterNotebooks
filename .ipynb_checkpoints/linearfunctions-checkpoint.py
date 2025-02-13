@@ -41,24 +41,24 @@ def calculate_and_plot(entry_1, entry_2, entry_3, entry_4, canvas, result_label)
                 A = B = 0
                 for term in terms:
                     if "x" in term:
-                        A = float(term.replace("x", "").strip() if term != "x" else "1" 
+                        A = float(term.replace("x", "").strip() if term != "x" else "1") 
                     elif "y" in term:
-                        B = float(term.replace("y", "").strip() if term != "y" else "1"  
+                        B = float(term.replace("y", "").strip() if term != "y" else "1")  
                 
                 slope = -A / B if B != 0 else 0  
                 intercept = right_side / B if B != 0 else 0  
              # Point-Slope Form
             elif "y" in equation_input and "=" in equation_input and "(x" in equation_input: 
-                match = re.match(r"y\s*([\+\-]?\s*\d+)\s*=\s*([\+\-]?\d+)\(x\s*([\+\-]?\s*\d+)\)", equation_input)
+                match = re.match(r"y\s*([\+\-]?\s*\d*\.?\d*)\s*=\s*([\+\-]?\d*\.?\d+(?:/\d*\.?\d+)?)\s*\(x\s*([\+\-]?\s*\d*\.?\d*)\)", equation_input)
                 
                 if match:
                     y_part = match.group(1).strip()
                     slope_part = match.group(2).strip()
                     x_part = match.group(3).strip()
             
-                    y1 = float(y_part.replace(' ', '').replace('+', '') if y_part else 0  
+                    y1 = float(y_part.replace(' ', '').replace('+', '') if y_part else 0)  
                     slope = float(slope_part)
-                    x1 = float(x_part.replace('(', '').replace(')', '').replace(' ', '').replace('+', '') if x_part else 0  
+                    x1 = float(x_part.replace('(', '').replace(')', '').replace(' ', '').replace('+', '') if x_part else 0)  
                     intercept = -(y1 - slope * x1 ) 
                 else:
                     raise ValueError("Invalid point-slope format. Example: y + 2 = 3(x - 1)")
@@ -210,7 +210,6 @@ def calculate_and_plot(entry_1, entry_2, entry_3, entry_4, canvas, result_label)
 
         # Plot the line by calling the function
         plot_line(slope, intercept, canvas)
-
     except ValueError as e:
         canvas.itemconfig(result_label, text=f"Error: {e}")
 
@@ -227,12 +226,19 @@ def plot_line(slope, intercept, canvas, min_x=-5, max_x=5):
     # Calculate y-values for the line equation
     x_values = list(range(min_x, max_x + 1))
     y_values = [slope * x + intercept for x in x_values]
+    
+    # Plot the line
     ax.plot(x_values, y_values, label=f'y = {Fraction(slope).limit_denominator()}x + {intercept}', color='blue', lw=2)
+    
+    # Plot and label points
+    for x, y in zip(x_values, y_values):
+        ax.scatter(x, y, color='red', zorder=3)  # Mark points in red
+        ax.text(x, y, f'({x},{y})', fontsize=7, verticalalignment='bottom', horizontalalignment='right')
     
     # Add grid, axes, labels, and title
     ax.axhline(0, color='black', linewidth=1)
     ax.axvline(0, color='black', linewidth=1)
-    ax.grid(color='gray', linestyle='--', linewidth=1)
+    ax.grid(color='gray', linestyle='--', linewidth=0.7)
     ax.set_xticks(range(min_x, max_x + 1))
     ax.set_yticks(range(-8, 8))
     ax.set_xlabel('x', fontsize=8)
@@ -243,7 +249,11 @@ def plot_line(slope, intercept, canvas, min_x=-5, max_x=5):
     # Set axis limits and aspect ratio
     ax.set_xlim(min_x - 1, max_x + 1)
     ax.set_ylim(-10, 10)
-    ax.set_aspect('equal', 'box')
+    ax.set_aspect('auto')
+
+    # Remove the surrounding box layout
+    ax.set_frame_on(False)
+
     plt.tight_layout()
     
     # Display the plot on the Tkinter window
@@ -252,7 +262,8 @@ def plot_line(slope, intercept, canvas, min_x=-5, max_x=5):
     current_plot.draw()
 
 
-def reset(entry_1, entry_2, entry_3, entry_4, canvas):
+
+def reset(entry_1, entry_2, entry_3, entry_4, canvas,result_label):
     # Clear all input textboxes
     entry_1.delete(0, END)
     entry_2.delete(0, END)
